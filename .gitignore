@@ -1,0 +1,7 @@
+*.pwd
+connection-profile.json
+original-backup.json
+Backups/
+*.log
+*.bak
+*.bak-*

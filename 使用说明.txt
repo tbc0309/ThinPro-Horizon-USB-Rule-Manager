@@ -1,0 +1,64 @@
+﻿ThinPro Horizon USB 规则管理器
+==============================
+
+用途
+----
+通过 Windows 管理电脑连接 HP ThinPro，为指定 USB 设备添加或删除 Horizon 重定向规则。
+
+运行环境
+--------
+- 支持 HP ThinPro 7.2 和 8.1。
+- ThinPro 需要开启 SSH，并允许 root 登录。
+- 工具已包含官方 plink.exe，无需安装其他组件。
+
+使用步骤
+--------
+【重要】运行本工具前，必须先在 ThinPro 中打开：
+控制面板 → 可管理性 → SSHD 管理器
+勾选“启用传入安全外壳访问”，然后选择“应用”。
+否则工具无法通过 SSH 连接 ThinPro。
+
+1. 双击 Start-ThinPro-USB-Rule-Manager.cmd。
+2. 输入 ThinPro IP 地址和管理员密码。
+3. 首次连接或系统重装后，核对并确认 SSH 主机指纹。
+4. 选择“扫描设备并添加规则”。
+5. 从 USB 列表中选择需要重定向的设备。
+6. 添加或删除规则后，物理拔插设备，再从 Horizon 中连接。
+
+界面说明
+--------
+- 绿色设备：已加入规则。
+- 白色设备：尚未加入规则。
+- VID:PID 是 USB 设备的型号标识，例如 6603:1002。
+
+安全说明
+--------
+- 工具不会保存 IP、管理员密码或登录记录。
+- 密码输入时不可见，只在本次运行中临时交给 Plink 使用，退出时删除。
+- 工具每次启动都会校验 plink.exe，文件异常时拒绝运行。
+- 不要添加正在操作 ThinPro 的唯一键盘或鼠标。
+- 规则只匹配所选设备的 VID/PID，不影响其他 USB 设备。
+
+备份与恢复
+----------
+首次连接一台 ThinPro 时，工具会保存修改前的原始状态：
+
+- ThinPro 同级备份：
+  /etc/vmware/config.bak
+  /etc/udev/rules.d/98-horizon-usb-managed.rules.bak
+- 原文件不存在时，以 .bak.absent 标记首次状态。
+- Windows 备份副本：
+  %LOCALAPPDATA%\ThinPro-USB-Rule-Manager\Backups\ThinPro_<machine-id>\original-backup.json
+
+备份按 ThinPro 的 machine-id 识别，不依赖 IP，且不会自动覆盖。
+
+“恢复首次原始状态”会恢复 Horizon 配置，并删除首次运行后创建的托管规则。执行恢复需要输入大写 RESTORE 确认。
+
+管理的远程配置
+--------------
+- USB 规则：/etc/udev/rules.d/98-horizon-usb-managed.rules
+- Horizon 白名单：/etc/vmware/config 中的 viewusb.IncludeVidPid
+
+项目地址
+--------
+https://github.com/tbc0309/ThinPro-Horizon-USB-Rule-Manager
